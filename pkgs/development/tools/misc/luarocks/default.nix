@@ -134,7 +134,15 @@ stdenv.mkDerivation (finalAttrs: {
       teto
     ];
     mainProgram = "luarocks";
-    platforms = platforms.linux ++ platforms.darwin;
+    # Python has a patch specifically for cross-compiling x86_64-freebsd.
+    # All other BSDs must be cross-compiled.
+    platforms =
+      platforms.linux
+      ++ platforms.darwin
+      ++ [ "x86_64-freebsd" ]
+      ++ lib.optionals (stdenv.hostPlatform == stdenv.buildPlatform) (
+        platforms.netbsd ++ platforms.openbsd
+      );
     downloadPage = "http://luarocks.org/releases/";
   };
 })
